@@ -151,12 +151,12 @@
                         <span class="term-name">Terminal 1 — Subscriber (Receiver)</span>
                     </div>
                     <div class="term-content">
-                        <div class="t-line"><span class="t-prompt">$</span> ./zerofeed sub --relay 66.241.125.54:8443 --passphrase "quantum-room-99" --quic --stream</div>
+                        <div class="t-line"><span class="t-prompt">$</span> ./zerofeed sub --relay zerofeed-relay.fly.dev:8443 --passphrase "quantum-room-99" --quic --stream</div>
                         <div class="t-line t-dim">====================================================</div>
                         <div class="t-line t-dim">[ZeroFeed Subscriber] Active Session</div>
                         <div class="t-line t-dim">Code / Passphrase : quantum-room-99</div>
                         <div class="t-line t-dim">Session ID        : 9f847dbc4b961df4eb3fd3341736870b0</div>
-                        <div class="t-line t-dim">Relay Server      : 66.241.125.54:8443 (Fly.io FRA)</div>
+                        <div class="t-line t-dim">Relay Server      : zerofeed-relay.fly.dev:8443 (Fly.io FRA)</div>
                         <div class="t-line t-dim">====================================================</div>
                         <div class="t-line t-cyan">[+] Authenticated ML-KEM-768 + X25519 PAKE session established!</div>
                         <div class="t-line t-white">Hello! Receiving live database stream...</div>
@@ -173,12 +173,12 @@
                         <span class="term-name">Terminal 2 — Publisher (Sender)</span>
                     </div>
                     <div class="term-content">
-                        <div class="t-line"><span class="t-prompt">$</span> ./zerofeed pub --relay 66.241.125.54:8443 --passphrase "quantum-room-99" --quic --stream</div>
+                        <div class="t-line"><span class="t-prompt">$</span> ./zerofeed pub --relay zerofeed-relay.fly.dev:8443 --passphrase "quantum-room-99" --quic --stream</div>
                         <div class="t-line t-dim">====================================================</div>
                         <div class="t-line t-dim">[ZeroFeed Publisher] Active Session</div>
                         <div class="t-line t-dim">Code / Passphrase : quantum-room-99</div>
                         <div class="t-line t-dim">Session ID        : 9f847dbc4b961df4eb3fd3341736870b0</div>
-                        <div class="t-line t-dim">Relay Server      : 66.241.125.54:8443 (Fly.io FRA)</div>
+                        <div class="t-line t-dim">Relay Server      : zerofeed-relay.fly.dev:8443 (Fly.io FRA)</div>
                         <div class="t-line t-dim">====================================================</div>
                         <div class="t-line t-cyan">[+] Authenticated ML-KEM-768 + X25519 PAKE session established! E2EE stream ready.</div>
                         <div class="t-line t-white">&gt; Hello! Receiving live database stream...</div>
@@ -568,7 +568,7 @@
         <div class="container">
             <div class="section-title">
                 <h2 data-en="Public Relay Performance Specs" data-it="Specifiche del Nodo Relay Pubblico">Public Relay Performance Specs</h2>
-                <p data-en="Real-world metrics for the public Frankfurt relay node (66.241.125.54)." data-it="Metriche reali per il nodo relay pubblico di Francoforte (66.241.125.54).">Real-world metrics for the public Frankfurt relay node (66.241.125.54).</p>
+                <p data-en="Real-world metrics for the public Frankfurt relay node (zerofeed-relay.fly.dev)." data-it="Metriche reali per il nodo relay pubblico di Francoforte (zerofeed-relay.fly.dev).">Real-world metrics for the public Frankfurt relay node (zerofeed-relay.fly.dev).</p>
             </div>
 
             <div class="docs-card table-wrapper">
@@ -584,7 +584,7 @@
                     <tbody>
                         <tr>
                             <td><strong>Frankfurt Public Node</strong></td>
-                            <td><strong class="t-cyan">66.241.125.54:8443</strong> (EU)</td>
+                            <td><strong class="t-cyan">zerofeed-relay.fly.dev:8443</strong> (EU)</td>
                             <td><code>&lt; 1 ms</code> Relay Matchmaking</td>
                             <td>Fly.io Anycast Global Routing</td>
                         </tr>
@@ -677,7 +677,7 @@
                         <tbody>
                             <tr>
                                 <td><code>--relay, -r</code></td>
-                                <td data-en="Relay endpoint (default: 66.241.125.54:8443)." data-it="Indirizzo del Relay (default: 66.241.125.54:8443).">Relay endpoint (default: 66.241.125.54:8443).</td>
+                                <td data-en="Relay endpoint (default: zerofeed-relay.fly.dev:8443)." data-it="Indirizzo del Relay (default: zerofeed-relay.fly.dev:8443).">Relay endpoint (default: zerofeed-relay.fly.dev:8443).</td>
                             </tr>
                             <tr>
                                 <td><code>--channel, -c, --code</code></td>
