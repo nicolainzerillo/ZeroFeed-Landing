@@ -411,7 +411,44 @@ function copyCommand(elementId) {
     });
 }
 
+function checkHashInvite() {
+    const hash = window.location.hash;
+    if (!hash || !hash.includes('join=')) return;
+
+    try {
+        const rawParam = hash.split('join=')[1];
+        if (!rawParam) return;
+        
+        let decoded = decodeURIComponent(rawParam);
+        if (decoded.includes('%')) {
+            try { decoded = decodeURIComponent(decoded); } catch (ignored) {}
+        }
+        let channelCode = decoded;
+
+        if (decoded.startsWith('zerofeed://')) {
+            const urlObj = new URL(decoded.replace('zerofeed://join', 'https://placeholder.local'));
+            channelCode = urlObj.searchParams.get('code') || channelCode;
+        }
+
+        const channelInput = document.getElementById('wasm-channel-code');
+        if (channelInput) {
+            channelInput.value = channelCode;
+            channelInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            
+            const consoleOutput = document.getElementById('wasm-output-console');
+            if (consoleOutput) {
+                consoleOutput.textContent += `\n[🔗] Client-Generated Invite Link Detected!\n    Channel Code: ${channelCode}\n    Ready to connect & decrypt.\n`;
+            }
+        }
+    } catch (e) {
+        console.warn('Failed to parse hash invite:', e);
+    }
+}
+
 document.addEventListener('DOMContentLoaded', () => {
     const savedLang = localStorage.getItem('zerofeed_lang') || 'en';
     setLanguage(savedLang);
+    checkHashInvite();
 });
+
+window.addEventListener('hashchange', checkHashInvite);
