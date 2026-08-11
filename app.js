@@ -129,7 +129,19 @@ async function initWasmSubscriber() {
         const urlParams = new URLSearchParams(window.location.search);
         if (urlParams.has('relay')) {
             host = urlParams.get('relay');
+        } else if (window.customHashRelay) {
+            host = window.customHashRelay;
         }
+
+        // Clean port if present (e.g. 92.4.216.150:8443 -> 92.4.216.150)
+        if (host.includes(':') && !host.startsWith('ws://') && !host.startsWith('wss://')) {
+            host = host.split(':')[0];
+        }
+        // Map raw IP to domain with valid Let's Encrypt TLS certificate for WSS
+        if (host === '92.4.216.150') {
+            host = 'zerofeed.duckdns.org';
+        }
+
         let wsUrl = host.startsWith('ws://') || host.startsWith('wss://') ? host : `wss://${host}:8444/`;
         consoleOutput.textContent += `[+] Connecting to Relay WebSocket: ${wsUrl}...\n`;
 
@@ -494,6 +506,10 @@ function checkHashInvite() {
         if (decoded.startsWith('zerofeed://')) {
             const urlObj = new URL(decoded.replace('zerofeed://join', 'https://placeholder.local'));
             channelCode = urlObj.searchParams.get('code') || channelCode;
+            const relayParam = urlObj.searchParams.get('relay');
+            if (relayParam) {
+                window.customHashRelay = relayParam;
+            }
         }
 
         const channelInput = document.getElementById('wasm-channel-code');
