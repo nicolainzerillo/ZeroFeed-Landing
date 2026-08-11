@@ -124,10 +124,12 @@ async function initWasmSubscriber() {
         const subMsgBytes = hexToBytes(initResult.subWireMsgHex);
         consoleOutput.textContent += `[✓] PAKE Subscriber Wire Payload generated (${subMsgBytes.length} bytes)\n`;
 
-        // Connect to WebSocket Relay port (8444)
-        let host = window.location.hostname || '127.0.0.1';
-        if (host === 'localhost' || !host) host = '127.0.0.1';
-        if (host.endsWith('github.io')) host = '92.4.216.150';
+        // Connect to WebSocket Relay port (8444) - Default to public Oracle Cloud Relay IP (92.4.216.150)
+        let host = '92.4.216.150';
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.has('relay')) {
+            host = urlParams.get('relay');
+        }
         const wsUrl = `ws://${host}:8444/`;
         consoleOutput.textContent += `[+] Connecting to Relay WebSocket: ${wsUrl}...\n`;
 
