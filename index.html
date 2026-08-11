@@ -21,7 +21,7 @@
             <a href="#" class="brand">
                 <span class="logo-icon">⚡</span>
                 <span class="brand-text">Zero<span class="cyan-gradient">Feed</span></span>
-                <span class="version-tag">v1.2</span>
+                <span class="version-tag">v1.3</span>
             </a>
             
             <div class="header-right">
@@ -57,7 +57,7 @@
         <div class="container">
             <div class="status-badge">
                 <span class="badge-dot pulse"></span>
-                <span data-en="Public Node: Frankfurt (Fly.io) • Dual Transport (QUIC / TCP) • Zero-Disk" data-it="Nodo Pubblico: Francoforte (Fly.io) • Doppio Trasporto (QUIC / TCP) • Zero-Disk">Public Node: Frankfurt (Fly.io) • Dual Transport (QUIC / TCP) • Zero-Disk</span>
+                <span data-en="Public Node: Turin (Oracle Cloud) • Dual Transport (QUIC / TCP) • Zero-Disk" data-it="Nodo Pubblico: Torino (Oracle Cloud) • Doppio Trasporto (QUIC / TCP) • Zero-Disk">Public Node: Turin (Oracle Cloud) • Dual Transport (QUIC / TCP) • Zero-Disk</span>
             </div>
 
             <h1 class="hero-title">
@@ -140,7 +140,7 @@
         <div class="container">
             <div class="section-title">
                 <h2 data-en="Live Terminal Execution" data-it="Esecuzione Reale da Terminale">Live Terminal Execution</h2>
-                <p data-en="Actual session output transmitting over the public Fly.io Frankfurt relay." data-it="Output reale di una sessione trasmessa attraverso il relay pubblico su Fly.io a Francoforte.">Actual session output transmitting over the public Fly.io Frankfurt relay.</p>
+                <p data-en="Actual session output transmitting over the public Oracle Cloud Turin relay." data-it="Output reale di una sessione trasmessa attraverso il relay pubblico su Oracle Cloud a Torino.">Actual session output transmitting over the public Oracle Cloud Turin relay.</p>
             </div>
 
             <div class="terminal-container">
@@ -151,12 +151,12 @@
                         <span class="term-name">Terminal 1 — Subscriber (Receiver)</span>
                     </div>
                     <div class="term-content">
-                        <div class="t-line"><span class="t-prompt">$</span> ./zerofeed sub --relay zerofeed-relay.fly.dev:8443 --passphrase "quantum-room-99" --quic --stream</div>
+                        <div class="t-line"><span class="t-prompt">$</span> ./zerofeed sub --relay 92.4.216.150:8443 --passphrase "quantum-room-99" --quic --stream</div>
                         <div class="t-line t-dim">====================================================</div>
                         <div class="t-line t-dim">[ZeroFeed Subscriber] Active Session</div>
                         <div class="t-line t-dim">Code / Passphrase : quantum-room-99</div>
                         <div class="t-line t-dim">Session ID        : 9f847dbc4b961df4eb3fd3341736870b0</div>
-                        <div class="t-line t-dim">Relay Server      : zerofeed-relay.fly.dev:8443 (Fly.io FRA)</div>
+                        <div class="t-line t-dim">Relay Server      : 92.4.216.150:8443 (Oracle Cloud TRN)</div>
                         <div class="t-line t-dim">====================================================</div>
                         <div class="t-line t-cyan">[+] Authenticated ML-KEM-768 + X25519 PAKE session established!</div>
                         <div class="t-line t-white">Hello! Receiving live database stream...</div>
@@ -173,12 +173,12 @@
                         <span class="term-name">Terminal 2 — Publisher (Sender)</span>
                     </div>
                     <div class="term-content">
-                        <div class="t-line"><span class="t-prompt">$</span> ./zerofeed pub --relay zerofeed-relay.fly.dev:8443 --passphrase "quantum-room-99" --quic --stream</div>
+                        <div class="t-line"><span class="t-prompt">$</span> ./zerofeed pub --relay 92.4.216.150:8443 --passphrase "quantum-room-99" --quic --stream</div>
                         <div class="t-line t-dim">====================================================</div>
                         <div class="t-line t-dim">[ZeroFeed Publisher] Active Session</div>
                         <div class="t-line t-dim">Code / Passphrase : quantum-room-99</div>
                         <div class="t-line t-dim">Session ID        : 9f847dbc4b961df4eb3fd3341736870b0</div>
-                        <div class="t-line t-dim">Relay Server      : zerofeed-relay.fly.dev:8443 (Fly.io FRA)</div>
+                        <div class="t-line t-dim">Relay Server      : 92.4.216.150:8443 (Oracle Cloud TRN)</div>
                         <div class="t-line t-dim">====================================================</div>
                         <div class="t-line t-cyan">[+] Authenticated ML-KEM-768 + X25519 PAKE session established! E2EE stream ready.</div>
                         <div class="t-line t-white">&gt; Hello! Receiving live database stream...</div>
@@ -677,7 +677,7 @@
                         <tbody>
                             <tr>
                                 <td><code>--relay, -r</code></td>
-                                <td data-en="Relay endpoint (default: zerofeed-relay.fly.dev:8443)." data-it="Indirizzo del Relay (default: zerofeed-relay.fly.dev:8443).">Relay endpoint (default: zerofeed-relay.fly.dev:8443).</td>
+                                <td data-en="Relay endpoint (default: 92.4.216.150:8443)." data-it="Indirizzo del Relay (default: 92.4.216.150:8443).">Relay endpoint (default: 92.4.216.150:8443).</td>
                             </tr>
                             <tr>
                                 <td><code>--channel, -c, --code</code></td>
