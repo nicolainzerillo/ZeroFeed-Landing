@@ -13,14 +13,6 @@ This repository contains the source code for the official ZeroFeed Web Landing P
 
 ---
 
-## 📺 Live WebAssembly Streaming Demo
-
-![ZeroFeed Live E2EE WebAssembly Stream Demo](docs/media/demo.png)
-
-*Figure 1: Live E2EE stream broadcast from CLI Publisher terminal to WebAssembly browser subscriber with matching SAS Verification Badges.*
-
----
-
 ## 🌟 Features
 
 - **🌐 100% In-Browser Decryption**: Zero installation, zero browser extensions, zero user account registration required.
