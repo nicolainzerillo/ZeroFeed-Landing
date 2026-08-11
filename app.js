@@ -124,21 +124,13 @@ async function initWasmSubscriber() {
         const subMsgBytes = hexToBytes(initResult.subWireMsgHex);
         consoleOutput.textContent += `[✓] PAKE Subscriber Wire Payload generated (${subMsgBytes.length} bytes)\n`;
 
-        // Connect to WebSocket Relay - Auto-detect HTTPS (WSS) vs HTTP (WS)
-        const isHttps = window.location.protocol === 'https:';
-        let wsUrl = isHttps 
-            ? 'wss://thunder-tcp-chi-extensions.trycloudflare.com/' 
-            : 'ws://92.4.216.150:8444/';
-
+        // Connect to WebSocket Relay port (8444) - Public Oracle Cloud Relay Node (92.4.216.150)
+        let host = '92.4.216.150';
         const urlParams = new URLSearchParams(window.location.search);
         if (urlParams.has('relay')) {
-            const customRelay = urlParams.get('relay');
-            if (customRelay.startsWith('ws://') || customRelay.startsWith('wss://')) {
-                wsUrl = customRelay;
-            } else {
-                wsUrl = `${isHttps ? 'wss' : 'ws'}://${customRelay}:8444/`;
-            }
+            host = urlParams.get('relay');
         }
+        let wsUrl = host.startsWith('ws://') || host.startsWith('wss://') ? host : `ws://${host}:8444/`;
         consoleOutput.textContent += `[+] Connecting to Relay WebSocket: ${wsUrl}...\n`;
 
         const ws = new WebSocket(wsUrl);
