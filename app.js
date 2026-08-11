@@ -333,13 +333,17 @@ async function initWasmSubscriber() {
 
         ws.onerror = (err) => {
             console.warn('WebSocket error:', err);
-            consoleOutput.textContent += `[!] WebSocket Error: Connection refused or blocked by browser mixed-content policy.\n`;
-            statusText.textContent = 'Error: WebSocket Connection Blocked/Refused';
+            if (!sessionKeyHex) {
+                consoleOutput.textContent += `[!] WebSocket Error: Connection refused or blocked by browser mixed-content policy.\n`;
+                statusText.textContent = 'Error: WebSocket Connection Blocked/Refused';
+            }
         };
 
         ws.onclose = (evt) => {
             consoleOutput.textContent += `[*] WebSocket Session Closed (Clean: ${evt.wasClean}, Code: ${evt.code}).\n`;
-            if (statusText && statusText.textContent.includes('Generating')) {
+            if (sessionKeyHex) {
+                statusText.textContent = '✓ E2EE Stream Completed (Session Closed)';
+            } else if (statusText && statusText.textContent.includes('Generating')) {
                 statusText.textContent = 'WebSocket Connection Closed';
             }
         };
