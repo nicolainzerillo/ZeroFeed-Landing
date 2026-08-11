@@ -138,9 +138,7 @@ async function initWasmSubscriber() {
         activeWs = ws;
 
         let sessionKeyHex = null;
-        let incomingFileName = 'received_file.bin';
-        let incomingFileSize = 0;
-        let fileChunks = [];
+        let fileTransfers = {}; // transfer_id -> { filename, fileSize, chunks: [] }
 
         ws.onopen = () => {
             try {
@@ -271,43 +269,72 @@ async function initWasmSubscriber() {
                         try {
                             const jsonStr = new TextDecoder().decode(decBytes.slice(1));
                             const meta = JSON.parse(jsonStr);
-                            incomingFileName = meta.filename || 'received_file';
-                            incomingFileSize = meta.file_size || 0;
-                            fileChunks = [];
+                            const tid = meta.transfer_id || 'default';
+                            fileTransfers[tid] = {
+                                filename: meta.filename || 'received_file.bin',
+                                fileSize: meta.file_size || 0,
+                                chunks: []
+                            };
+
+                            const fname = fileTransfers[tid].filename;
+                            const fsize = fileTransfers[tid].fileSize;
                             
                             if (fileCard) fileCard.style.display = 'block';
-                            if (fileNameEl) fileNameEl.textContent = incomingFileName;
-                            if (fileSizeEl) fileSizeEl.textContent = `Receiving "${incomingFileName}" (${(incomingFileSize / 1024).toFixed(1)} KB)...`;
+                            if (fileNameEl) fileNameEl.textContent = fname;
+                            if (fileSizeEl) fileSizeEl.textContent = `Receiving "${fname}" (${(fsize / 1024).toFixed(1)} KB)...`;
 
-                            consoleOutput.textContent += `[!] Incoming File Transfer: "${incomingFileName}" (${incomingFileSize} bytes)...\n`;
+                            consoleOutput.textContent += `[!] Incoming File Transfer: "${fname}" (${fsize} bytes)...\n`;
                         } catch (e) {
                             console.warn('Failed to parse TagFileStart JSON header:', e);
-                            incomingFileName = 'received_file';
-                            fileChunks = [];
                         }
 
                     } else if (tag === 0x03) { // TagFileChunk
                         // Format: Tag(1B) + transferID(16B hex string) + binary chunk data
-                        const chunkData = decBytes.length > 17 ? decBytes.slice(17) : decBytes.slice(1);
-                        fileChunks.push(chunkData);
+                        let tid = 'default';
+                        let chunkData = decBytes.slice(1);
+                        if (decBytes.length > 17) {
+                            tid = new TextDecoder().decode(decBytes.slice(1, 17));
+                            chunkData = decBytes.slice(17);
+                        }
+
+                        if (fileTransfers[tid]) {
+                            fileTransfers[tid].chunks.push(chunkData);
+                        } else {
+                            const firstTid = Object.keys(fileTransfers)[0];
+                            if (firstTid && fileTransfers[firstTid]) {
+                                fileTransfers[firstTid].chunks.push(chunkData);
+                            }
+                        }
+
                         consoleOutput.textContent += `[.] Received chunk (${chunkData.length} bytes)\n`;
                         consoleOutput.scrollTop = consoleOutput.scrollHeight;
 
                     } else if (tag === 0x04) { // TagFileEnd
                         // Format: Tag(1B) + transferID(16B hex string)
+                        let tid = 'default';
+                        if (decBytes.length >= 17) {
+                            tid = new TextDecoder().decode(decBytes.slice(1, 17));
+                        }
+
+                        const keys = Object.keys(fileTransfers);
+                        const transferObj = fileTransfers[tid] || fileTransfers[keys[0]] || { filename: 'received_file.bin', fileSize: 0, chunks: [] };
+                        const fname = transferObj.filename;
+
                         let totalLen = 0;
-                        for (const chunk of fileChunks) totalLen += chunk.length;
+                        for (const chunk of transferObj.chunks) totalLen += chunk.length;
 
                         const merged = new Uint8Array(totalLen);
                         let offset = 0;
-                        for (const chunk of fileChunks) {
+                        for (const chunk of transferObj.chunks) {
                             merged.set(chunk, offset);
                             offset += chunk.length;
                         }
 
+                        delete fileTransfers[tid];
+
                         // Determine MIME type for rich preview
                         let mimeType = 'application/octet-stream';
-                        const lowerName = incomingFileName.toLowerCase();
+                        const lowerName = fname.toLowerCase();
                         if (lowerName.endsWith('.png')) mimeType = 'image/png';
                         else if (lowerName.endsWith('.jpg') || lowerName.endsWith('.jpeg')) mimeType = 'image/jpeg';
                         else if (lowerName.endsWith('.gif')) mimeType = 'image/gif';
@@ -319,11 +346,11 @@ async function initWasmSubscriber() {
                         const blobUrl = URL.createObjectURL(blob);
 
                         if (fileCard) fileCard.style.display = 'block';
-                        if (fileNameEl) fileNameEl.textContent = incomingFileName;
+                        if (fileNameEl) fileNameEl.textContent = fname;
                         if (fileSizeEl) fileSizeEl.textContent = `${(totalLen / 1024).toFixed(1)} KB • E2EE Decrypted`;
                         if (fileDownloadBtn) {
                             fileDownloadBtn.href = blobUrl;
-                            fileDownloadBtn.download = incomingFileName;
+                            fileDownloadBtn.download = fname;
                         }
 
                         if (streamDisplay) {
@@ -335,28 +362,21 @@ async function initWasmSubscriber() {
                             if (mimeType.startsWith('image/')) {
                                 filePreviewHtml = `<div style="margin-top: 0.5rem; text-align: center;"><img src="${blobUrl}" style="max-width: 100%; max-height: 240px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.15); box-shadow: 0 4px 12px rgba(0,0,0,0.3);" /></div>`;
                             }
-                            streamDisplay.innerHTML += `<div style="margin-bottom: 0.8rem; background: rgba(15, 23, 42, 0.7); padding: 0.85rem; border-radius: 10px; border: 1px solid rgba(56, 189, 248, 0.35); color: #38bdf8;">
+                            streamDisplay.innerHTML += `<div style="margin-bottom: 0.8rem; background: rgba(15, 23, 42, 0.75); padding: 0.85rem; border-radius: 10px; border: 1px solid rgba(56, 189, 248, 0.4); color: #38bdf8; box-shadow: 0 4px 14px rgba(0,0,0,0.25);">
                                 <div style="font-weight: 600; font-size: 0.95rem; display: flex; justify-content: space-between; align-items: center;">
-                                    <span>📄 <strong>${incomingFileName}</strong></span>
+                                    <span>📄 <strong style="color: #f8fafc;">${fname}</strong></span>
                                     <span style="font-size: 0.8rem; color: #94a3b8;">${(totalLen / 1024).toFixed(1)} KB</span>
                                 </div>
                                 ${filePreviewHtml}
-                                <div style="margin-top: 0.6rem;">
-                                    <a href="${blobUrl}" download="${incomingFileName}" style="display: inline-block; padding: 0.4rem 0.9rem; background: linear-gradient(135deg, #0284c7, #2563eb); color: white; border-radius: 6px; font-size: 0.85rem; text-decoration: none; font-weight: 600; box-shadow: 0 2px 6px rgba(0,0,0,0.2);">💾 Download ${incomingFileName}</a>
+                                <div style="margin-top: 0.7rem;">
+                                    <a href="${blobUrl}" download="${fname}" style="display: inline-block; padding: 0.45rem 1rem; background: linear-gradient(135deg, #0284c7, #2563eb); color: white; border-radius: 6px; font-size: 0.85rem; text-decoration: none; font-weight: 600; box-shadow: 0 2px 8px rgba(2,132,199,0.3);">💾 Download ${fname}</a>
                                 </div>
                             </div>`;
                             streamDisplay.scrollTop = streamDisplay.scrollHeight;
                         }
 
-                        const downloadAnchor = document.createElement('a');
-                        downloadAnchor.href = blobUrl;
-                        downloadAnchor.download = incomingFileName;
-                        document.body.appendChild(downloadAnchor);
-                        downloadAnchor.click();
-                        document.body.removeChild(downloadAnchor);
-
-                        consoleOutput.textContent += `[✓] File Received & Decrypted Successfully: "${incomingFileName}" (${totalLen} bytes)\n`;
-                        statusText.textContent = `[✓] Decrypted File: ${incomingFileName} (${(totalLen / 1024).toFixed(1)} KB)`;
+                        consoleOutput.textContent += `[✓] File Ready for Download: "${fname}" (${totalLen} bytes)\n`;
+                        statusText.textContent = `[✓] Decrypted File: ${fname} (${(totalLen / 1024).toFixed(1)} KB)`;
                     }
                 }
             } catch (e) {
