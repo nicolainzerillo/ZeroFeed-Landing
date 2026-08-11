@@ -13,7 +13,7 @@ async function loadWasmEngine() {
 
     const go = new Go();
     try {
-        const response = await fetch('zerofeed.wasm?v=' + Date.now());
+        const response = await fetch('zerofeed.wasm?v=1.3.0_' + Date.now(), { cache: 'no-store' });
         const buffer = await response.arrayBuffer();
         const result = await WebAssembly.instantiate(buffer, go.importObject);
         go.run(result.instance);
